@@ -8,6 +8,7 @@ import App from './App.vue'
 import { Quasar } from 'quasar'
 import axios from 'axios'
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import router from './router'
 
 // 创建Vue应用实例
@@ -25,6 +26,9 @@ app.config.globalProperties.$api = api
 
 // 使用Vue Router
 app.use(router)
+
+// 使用Pinia
+app.use(createPinia())
 
 // 使用Quasar UI框架
 app.use(Quasar, {

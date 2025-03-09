@@ -1,7 +1,7 @@
 <script setup>
 // 导入Quasar组件
 import { ref } from 'vue'
-import { APP_CONFIG } from './config'
+import { APP_CONFIG } from './config/app.config'
 
 // 侧边栏是否开启状态
 const leftDrawerOpen = ref(false)

@@ -3,7 +3,20 @@ export const APP_CONFIG = {
   // 应用基本信息
   APP_NAME: import.meta.env.VITE_APP_TITLE || '智选车系统',
   APP_ENV: import.meta.env.VITE_APP_ENV || 'development',
+  
+  // API配置
   API_URL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090/api',
+  
+  // 基础URL配置
+  BASE_URL: import.meta.env.VITE_BASE_URL || 'http://localhost:8090',
+  
+  // 图片资源配置
+  IMAGE_BASE_URL: import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:8090/images',
+  
+  // 开发模式配置
+  DEV_MODE: import.meta.env.VITE_DEV_MODE === 'true',
+  API_MOCK: import.meta.env.VITE_API_MOCK === 'true',
   
   // 公司信息
   COMPANY: {

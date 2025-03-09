@@ -1,6 +1,23 @@
+/**
+ * 路由配置文件
+ * 
+ * 该文件配置了应用的路由系统，包括：
+ * 1. 路由定义：所有页面路由的配置，包括路径、组件和元数据
+ * 2. 权限控制：通过路由守卫实现基于用户权限的访问控制
+ * 3. 页面标题：自动设置每个页面的标题
+ * 
+ * 路由守卫功能：
+ * - 检查用户访问权限
+ * - 无权限时重定向到404页面
+ * - 设置动态页面标题
+ */
+
 import { createRouter, createWebHistory } from 'vue-router'
 
-import { APP_CONFIG } from '../config'
+import { APP_CONFIG } from '../config/app.config'
+import NotFound from '../views/NotFound.vue'
+import { hasPermission } from '../config/permission'
+import { useUserStore } from '../store/user'
 
 // 路由配置
 const routes = [
@@ -13,21 +30,9 @@ const routes = [
     }
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue'),
-    meta: {
-      title: APP_CONFIG.PAGE_TITLES.ABOUT
-    }
-  },
-  // 404页面
-  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/NotFound.vue'),
-    meta: {
-      title: APP_CONFIG.PAGE_TITLES.NOT_FOUND
-    }
+    component: NotFound
   }
 ]
 
@@ -37,10 +42,15 @@ const router = createRouter({
   routes
 })
 
-// 全局前置守卫
+// 全局路由守卫
 router.beforeEach((to, from, next) => {
-  // 这里可以添加身份验证逻辑
-  // 例如检查用户是否已登录，有权访问该页面等
+  const userStore = useUserStore()
+  
+  // 检查用户是否有权限访问目标页面
+  if (!hasPermission(to.path, userStore.permissionLevel)) {
+    next({ name: 'NotFound' })
+    return
+  }
   
   // 设置页面标题
   document.title = `${to.meta.title} - ${APP_CONFIG.APP_NAME}`
