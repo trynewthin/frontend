@@ -11,12 +11,8 @@
   >
     <div class="fullscreen-modal" :class="{ 'blur-active': modalOpen }" @click="closeModal">
       <div class="modal-content-wrapper" @click.stop>
+        <!-- 主要内容面板 -->
         <q-card class="auth-modal">
-          <!-- 关闭按钮 -->
-          <div class="close-button" @click="closeModal">
-            <q-btn flat round color="white" icon="close" />
-          </div>
-
           <!-- 标题区域 -->
           <div class="auth-header text-center">
             <h2 class="text-h4 q-mb-md">{{ isLogin ? '欢迎回来' : '创建账号' }}</h2>
@@ -25,7 +21,7 @@
 
           <!-- 表单区域 -->
           <q-card-section class="q-px-lg q-pb-lg">
-            <q-form @submit="onSubmit" class="auth-form">
+            <q-form @submit="onSubmit" class="auth-form" autocomplete="off">
               <!-- 注册时的用户名输入 -->
               <q-input
                 v-if="!isLogin"
@@ -34,6 +30,7 @@
                 outlined
                 dark
                 label="用户名"
+                autocomplete="off"
                 :rules="[val => val && val.length > 0 || '请输入用户名']"
               >
                 <template v-slot:prepend>
@@ -49,6 +46,7 @@
                 dark
                 type="email"
                 label="邮箱"
+                autocomplete="off"
                 :rules="[val => val && val.length > 0 || '请输入邮箱', val => validateEmail(val) || '请输入有效的邮箱地址']"
               >
                 <template v-slot:prepend>
@@ -64,6 +62,7 @@
                 dark
                 :type="showPassword ? 'text' : 'password'"
                 label="密码"
+                autocomplete="new-password"
                 :rules="[val => val && val.length > 5 || '密码至少需要6个字符']"
               >
                 <template v-slot:prepend>
@@ -87,6 +86,7 @@
                 dark
                 :type="showConfirmPassword ? 'text' : 'password'"
                 label="确认密码"
+                autocomplete="new-password"
                 :rules="[
                   val => val && val.length > 0 || '请确认密码',
                   val => val === form.password || '两次输入的密码不一致'
@@ -103,44 +103,51 @@
                   />
                 </template>
               </q-input>
-
-              <!-- 提交按钮 -->
-              <div class="auth-actions">
-                <q-btn
-                  class="submit-btn full-width"
-                  unelevated
-                  size="large"
-                  :label="isLogin ? '登录' : '注册'"
-                  type="submit"
-                />
-              </div>
-
-              <!-- 切换登录/注册 -->
-              <div class="text-center q-mt-md">
-                <p class="text-grey-5">
-                  {{ isLogin ? '还没有账号？' : '已有账号？' }}
-                  <a
-                    href="#"
-                    class="text-primary"
-                    @click.prevent="toggleAuthMode"
-                  >{{ isLogin ? '立即注册' : '立即登录' }}</a>
-                </p>
-              </div>
-
-              <!-- 第三方登录 -->
-              <div class="third-party-auth q-mt-lg">
-                <div class="divider">
-                  <span class="text-grey-5">或使用以下方式</span>
-                </div>
-                <div class="third-party-buttons q-mt-md">
-                  <q-btn round flat color="white" icon="img:https://www.google.com/favicon.ico" class="q-mx-sm" />
-                  <q-btn round flat color="white" icon="img:https://www.wechat.com/favicon.ico" class="q-mx-sm" />
-                  <q-btn round flat color="white" icon="img:https://weibo.com/favicon.ico" class="q-mx-sm" />
-                </div>
-              </div>
             </q-form>
           </q-card-section>
         </q-card>
+
+        <!-- 右侧按钮面板 -->
+        <div class="floating-buttons" @click.stop>
+          <!-- 主操作按钮 -->
+          <q-btn
+            flat
+            round
+            color="white"
+            size="lg"
+            :icon="isLogin ? 'login' : 'person_add'"
+            class="q-mb-md action-btn"
+            @click="onSubmit"
+          >
+            <q-tooltip>{{ isLogin ? '登录' : '注册' }}</q-tooltip>
+          </q-btn>
+          
+          <!-- 模式切换按钮 -->
+          <q-btn
+            flat
+            round
+            color="white"
+            size="lg"
+            :icon="isLogin ? 'person_add' : 'arrow_back'"
+            class="q-mb-md action-btn"
+            @click="toggleAuthMode"
+          >
+            <q-tooltip>{{ isLogin ? '创建新账号' : '返回登录' }}</q-tooltip>
+          </q-btn>
+
+          <!-- 关闭按钮 -->
+          <q-btn
+            flat
+            round
+            color="white"
+            size="lg"
+            icon="close"
+            class="action-btn"
+            @click="closeModal"
+          >
+            <q-tooltip>关闭</q-tooltip>
+          </q-btn>
+        </div>
       </div>
     </div>
   </q-dialog>
@@ -208,6 +215,11 @@ watch(() => props.modelValue, (newVal) => {
       password: '',
       confirmPassword: ''
     }
+    // 禁用背景滚动
+    document.body.style.overflow = 'hidden'
+  } else {
+    // 恢复背景滚动
+    document.body.style.overflow = ''
   }
 })
 
@@ -219,11 +231,15 @@ watch(() => modalOpen.value, (newVal) => {
 // 关闭模态窗口
 const closeModal = () => {
   modalOpen.value = false
+  // 恢复背景滚动
+  document.body.style.overflow = ''
 }
 
 // 模态窗口隐藏时触发
 const onHide = () => {
   emit('update:modelValue', false)
+  // 恢复背景滚动
+  document.body.style.overflow = ''
 }
 
 // 切换登录/注册模式
@@ -304,7 +320,7 @@ const validateEmail = (email) => {
 
 .modal-content-wrapper {
   width: 85%;
-  max-width: 480px;
+  max-width: 900px;
   padding: 20px;
   box-sizing: border-box;
   opacity: 0;
@@ -312,8 +328,9 @@ const validateEmail = (email) => {
   transition: all 0.3s ease;
   cursor: default;
   display: flex;
+  gap: 24px;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 }
 
 .blur-active .modal-content-wrapper {
@@ -322,7 +339,8 @@ const validateEmail = (email) => {
 }
 
 .auth-modal {
-  width: 100%;
+  flex: 1;
+  max-width: 580px;
   max-height: 85vh;
   border-radius: 16px;
   background-color: #121212;
@@ -335,20 +353,14 @@ const validateEmail = (email) => {
   flex-direction: column;
 }
 
-.close-button {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 2;
-}
-
 .auth-header {
-  padding: 40px 40px 20px;
+  padding: 48px 48px 24px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
   flex-shrink: 0;
 }
 
 .q-card-section {
+  padding: 0 48px 48px;
   flex: 1;
   overflow-y: auto;
   min-height: 0;
@@ -403,85 +415,88 @@ const validateEmail = (email) => {
   }
 }
 
-.submit-btn {
-  background: linear-gradient(45deg, #2196f3, #64b5f6);
-  color: white;
-  font-weight: 500;
-  letter-spacing: 1px;
-  border-radius: 8px;
-  height: 48px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-}
-
-.submit-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.third-party-auth {
-  position: relative;
-  padding-top: 20px;
-}
-
-.divider {
-  text-align: center;
-  position: relative;
-  
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 30%;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-  }
-  
-  &::before {
-    left: 0;
-  }
-  
-  &::after {
-    right: 0;
-  }
-  
-  span {
-    background: #121212;
-    padding: 0 15px;
-    font-size: 0.9rem;
-  }
-}
-
-.third-party-buttons {
+.floating-buttons {
+  position: fixed;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2000;
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  
-  .q-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-  }
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.floating-buttons .action-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.5rem;
+}
+
+.floating-buttons .action-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.floating-buttons .action-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* 响应式调整 */
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .modal-content-wrapper {
-    padding: 16px;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 92%;
+    padding: 12px;
+  }
+
+  .auth-modal {
+    width: 100%;
+  }
+
+  .floating-buttons {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 580px;
+    margin-top: 16px;
+    background: transparent;
+    padding: 0;
+  }
+
+  .floating-buttons .action-btn {
+    margin: 0;
+  }
+
+  .auth-header {
+    padding: 36px 32px 20px;
   }
   
-  .auth-header {
-    padding: 30px 20px 15px;
+  .q-card-section {
+    padding: 0 32px 36px;
   }
   
   .auth-form {
-    gap: 15px;
+    gap: 16px;
+  }
+
+  .action-btn {
+    height: 52px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
   }
 }
 
