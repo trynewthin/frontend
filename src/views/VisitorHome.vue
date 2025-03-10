@@ -21,8 +21,19 @@
           </q-input>
         </div>
         <div class="header-right">
-          <q-btn flat text-color="white" label="登录" to="/login" class="q-mr-sm" />
-          <q-btn outline text-color="white" label="注册" to="/register" />
+          <q-btn 
+            flat 
+            text-color="white" 
+            label="登录" 
+            @click="showAuthModal('login')" 
+            class="q-mr-sm" 
+          />
+          <q-btn 
+            outline 
+            text-color="white" 
+            label="注册" 
+            @click="showAuthModal('register')" 
+          />
         </div>
       </div>
     </div>
@@ -106,6 +117,55 @@
         v-model="detailModalOpen"
         :car="selectedCar"
       />
+
+      <!-- 登录注册模态窗口 -->
+      <auth-modal
+        v-model="authModalOpen"
+        v-model:mode="authMode"
+        @login="handleLogin"
+        @register="handleRegister"
+      />
+    </div>
+
+    <!-- 页脚容器 -->
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4 class="footer-title">关于智选车</h4>
+          <div class="footer-links">
+            <a href="#" class="footer-link">关于我们</a>
+            <a href="#" class="footer-link">加入我们</a>
+            <a href="#" class="footer-link">联系方式</a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-title">帮助中心</h4>
+          <div class="footer-links">
+            <a href="#" class="footer-link">购车指南</a>
+            <a href="#" class="footer-link">常见问题</a>
+            <a href="#" class="footer-link">服务条款</a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-title">商务合作</h4>
+          <div class="footer-links">
+            <a href="#" class="footer-link">品牌入驻</a>
+            <a href="#" class="footer-link">经销商加盟</a>
+            <a href="#" class="footer-link">广告服务</a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-title">关注我们</h4>
+          <div class="footer-links">
+            <a href="#" class="footer-link">微信公众号</a>
+            <a href="#" class="footer-link">官方微博</a>
+            <a href="#" class="footer-link">企业邮箱</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="copyright">© 2024 智选车 版权所有 | ICP备案号：xxxxxxxx号</p>
+      </div>
     </div>
   </q-page>
 </template>
@@ -114,6 +174,7 @@
 import { ref } from 'vue'
 import CarCard from '../components/car/CarCard.vue'
 import CarDetailModal from '../components/car/CarDetailModal.vue'
+import AuthModal from '../components/auth/AuthModal.vue'
 
 // 轮播图当前幻灯片
 const slide = ref('first')
@@ -128,6 +189,44 @@ const selectedCar = ref({})
 
 // 搜索相关
 const searchQuery = ref('')
+
+// 登录注册模态窗口相关
+const authModalOpen = ref(false)
+const authMode = ref('login')
+
+// 显示登录注册模态窗口
+const showAuthModal = (mode) => {
+  authMode.value = mode
+  authModalOpen.value = true
+}
+
+// 处理登录
+const handleLogin = async (data) => {
+  console.log('登录数据：', data)
+  // TODO: 实现登录逻辑
+  try {
+    // 这里添加登录API调用
+    // const response = await loginApi(data)
+    authModalOpen.value = false
+    // 登录成功后的处理
+  } catch (error) {
+    console.error('登录失败：', error)
+  }
+}
+
+// 处理注册
+const handleRegister = async (data) => {
+  console.log('注册数据：', data)
+  // TODO: 实现注册逻辑
+  try {
+    // 这里添加注册API调用
+    // const response = await registerApi(data)
+    authModalOpen.value = false
+    // 注册成功后的处理
+  } catch (error) {
+    console.error('注册失败：', error)
+  }
+}
 
 // 显示车辆详情
 const showCarDetails = (car) => {
@@ -422,9 +521,9 @@ const displayCars = ref(cars)
   box-sizing: border-box;
   /* 使用负边距扩展到边缘 */
   margin-left: 0px;
-  margin-right: 5px;
-  padding-left: 15px;
-  padding-right: 20px;
+  margin-right: -10px;
+  padding-left: 0px;
+  padding-right: 0px;
   /* 防止文字被选择 */
   user-select: none;
   -webkit-user-select: none;
@@ -598,5 +697,91 @@ const displayCars = ref(cars)
   min-width: 140px; /* 固定右侧宽度 */
   display: flex;
   justify-content: flex-end;
+}
+
+/* 页脚样式 */
+.footer-container {
+  width: 100%;
+  background: #1a1a1a;
+  padding: 60px 0 20px;
+  margin-top: 80px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 20px;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.footer-link:hover {
+  color: rgba(255, 255, 255, 0.9);
+  transform: translateX(4px);
+}
+
+.footer-bottom {
+  max-width: 1280px;
+  margin: 40px auto 0;
+  padding: 20px 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.copyright {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 1024px) {
+  .footer-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .footer-container {
+    padding: 40px 0 16px;
+    margin-top: 60px;
+  }
+  
+  .footer-bottom {
+    margin-top: 30px;
+  }
 }
 </style> 
